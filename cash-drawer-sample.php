@@ -123,7 +123,7 @@ function cash_drawer_pos_page() {
             </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-            <button type="button" class="btn btn-success" id="confirmDrawerBtn">Update</button>
+            <button type="button" class="btn btn-success" id="updateEvent">Update</button>
           </div>
         </div>
       </div>
@@ -185,10 +185,10 @@ function cash_drawer_pos_page() {
                     var eventType = data.event_type.toLowerCase();
 
                     var html = `
-                        <input type="hidden" value="${data.id}" >
+                        <input type="hidden" id="edit-event-id" value="${data.id}">
                         <div class="p-4">
                             <label for="tender-type" class="form-label">Select Tender Type</label>
-                            <select id="tender-type" class="form-select">
+                            <select id="edit-tender-type" class="form-select">
                                 <option value="cash" ${eventType === 'cash' ? 'selected' : ''}>Cash</option>
                                 <option value="check" ${eventType === 'check' ? 'selected' : ''}>Check</option>
                                 <option value="card" ${eventType === 'card' ? 'selected' : ''}>Card</option>
@@ -196,7 +196,7 @@ function cash_drawer_pos_page() {
                                     ? `<option value="${eventType}" selected>${capitalize(eventType)}</option>` : ''}
                             </select>
                         </div>
-`;
+                    `;
 
                     $('#edit-event-body').html(html);
 
@@ -206,6 +206,32 @@ function cash_drawer_pos_page() {
                 },
                 error: function (err) {
                     alert('Could not fetch event.');
+                    console.log(err);
+                }
+            });
+        });
+
+        // Update Event
+        $('#updateEvent').on('click', function () {
+            const id = $('#edit-event-id').val();
+            const eventType = $('#edit-tender-type').val();
+
+            const url = `${CASH_DRAWER_API_BASE}event/${id}`;
+
+            $.ajax({
+                url: url,
+                method: 'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    event_type: eventType
+                }),
+                success: function (response) {
+                    alert('Event updated successfully!');
+                    $('#editEventModal').modal('hide');
+                    location.reload(); // Optional: reload to reflect changes
+                },
+                error: function (err) {
+                    alert('Failed to update event.');
                     console.log(err);
                 }
             });

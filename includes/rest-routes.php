@@ -26,6 +26,24 @@ function cash_drawer_register_routes() {
         ),
     ));
 
+
+    register_rest_route('cash-drawer/v1', '/event/(?P<id>\d+)', array(
+        'methods'  => 'PUT',
+        'callback' => 'cash_drawer_update_event',
+        'permission_callback' => '__return_true',
+        'args' => array(
+            'id' => array(
+                'required' => true,
+                'type' => 'integer',
+            ),
+            'event_type' => array(
+                'required' => true,
+                'type' => 'string',
+            ),
+        ),
+    ));
+
+
 }
 
 function cash_drawer_log_event($request) {
@@ -62,5 +80,30 @@ function cash_drawer_get_event($request) {
         'id'         => $event->id,
         'event_type' => $event->event_type,
         'created_at' => $event->created_at
+    ]);
+}
+
+
+function cash_drawer_update_event($request) {
+    global $wpdb;
+    $table = $wpdb->prefix . 'cash_drawer_events';
+    $id = intval($request['id']);
+    $event_type = sanitize_text_field($request->get_param('event_type'));
+
+    $updated = $wpdb->update(
+        $table,
+        ['event_type' => $event_type],
+        ['id' => $id],
+        ['%s'],
+        ['%d']
+    );
+
+    if ($updated === false) {
+        return new WP_Error('db_update_error', 'Failed to update event.', array('status' => 500));
+    }
+
+    return rest_ensure_response([
+        'success' => true,
+        'message' => 'Event updated successfully',
     ]);
 }
