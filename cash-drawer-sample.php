@@ -75,6 +75,9 @@ function cash_drawer_pos_page() {
                                     <td><?php echo esc_html($event->id); ?></td>
                                     <td><?php echo esc_html(ucfirst($event->event_type)); ?></td>
                                     <td><?php echo esc_html(date('Y-m-d H:i:s', strtotime($event->created_at))); ?></td>
+                                    <td>
+                                        <button class="btn btn-warning edit-drawer-btn" data-id="<?php echo esc_attr($event->id); ?>">Edit</button>
+                                    </td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php else: ?>
@@ -107,14 +110,34 @@ function cash_drawer_pos_page() {
       </div>
     </div>
 
+    <!-- Edit Event Modal -->
+    <div class="modal fade" id="editEventModal" tabindex="-1" aria-labelledby="editEventModal" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow rounded">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title" id="drawerConfirmLabel">Edit Event</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+            <div id="edit-event-body" >
+
+            </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-success" id="confirmDrawerBtn">Update</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script>
     jQuery(document).ready(function ($) {
         let originalClickHandler;
         let isDrawerModalOpen = false;
+        const CASH_DRAWER_API_BASE = "<?php echo esc_url( get_rest_url(null, 'cash-drawer/v1/') ); ?>";
 
         $('#place-order-btn').on('click', function (e) {
             const tender = $('#tender-type').val();
-            if (tender === 'cash' || tender === 'check') {
+            if (tender === 'cash' || tender === 'check' || tender === 'card') {
                 e.preventDefault();
 
                 if (!isDrawerModalOpen) {
@@ -132,7 +155,7 @@ function cash_drawer_pos_page() {
                 url: '/wordpress/wp-json/cash-drawer/v1/event',
                 method: 'POST',
                 contentType: 'application/json',
-                data: JSON.stringify({ event_type: tender + '-sale' }),
+                data: JSON.stringify({ event_type: tender }),
                 success: function () {
                     $('#drawerConfirmModal').modal('hide');
                     isDrawerModalOpen = false;
@@ -145,6 +168,50 @@ function cash_drawer_pos_page() {
                 }
             });
         });
+
+
+        // Get Event By ID
+        $('.edit-drawer-btn').on('click', function () {
+            const id = $(this).data('id');
+
+            const url = `${CASH_DRAWER_API_BASE}event/${id}`;
+
+
+            $.ajax({
+                url: url,
+                method: 'GET',
+                success: function (data) {
+
+                    var eventType = data.event_type.toLowerCase();
+
+                    var html = `
+                        <input type="hidden" value="${data.id}" >
+                        <div class="p-4">
+                            <label for="tender-type" class="form-label">Select Tender Type</label>
+                            <select id="tender-type" class="form-select">
+                                <option value="cash" ${eventType === 'cash' ? 'selected' : ''}>Cash</option>
+                                <option value="check" ${eventType === 'check' ? 'selected' : ''}>Check</option>
+                                <option value="card" ${eventType === 'card' ? 'selected' : ''}>Card</option>
+                                ${!['cash', 'check', 'card'].includes(eventType)
+                                    ? `<option value="${eventType}" selected>${capitalize(eventType)}</option>` : ''}
+                            </select>
+                        </div>
+`;
+
+                    $('#edit-event-body').html(html);
+
+
+                    $('#editEventModal').modal('show');
+
+                },
+                error: function (err) {
+                    alert('Could not fetch event.');
+                    console.log(err);
+                }
+            });
+        });
+
+
     });
     </script>
 
