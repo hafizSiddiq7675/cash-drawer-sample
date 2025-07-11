@@ -44,6 +44,19 @@ function cash_drawer_register_routes() {
     ));
 
 
+    register_rest_route('cash-drawer/v1', '/event/(?P<id>\d+)', array(
+        'methods'  => 'DELETE',
+        'callback' => 'cash_drawer_delete_event',
+        'permission_callback' => '__return_true',
+        'args' => array(
+            'id' => array(
+                'required' => true,
+                'type' => 'integer',
+            ),
+        ),
+    ));
+
+
 }
 
 function cash_drawer_log_event($request) {
@@ -105,5 +118,23 @@ function cash_drawer_update_event($request) {
     return rest_ensure_response([
         'success' => true,
         'message' => 'Event updated successfully',
+    ]);
+}
+
+
+function cash_drawer_delete_event($request) {
+    global $wpdb;
+    $table = $wpdb->prefix . 'cash_drawer_events';
+    $id = intval($request['id']);
+
+    $deleted = $wpdb->delete($table, ['id' => $id], ['%d']);
+
+    if ($deleted === false) {
+        return new WP_Error('db_delete_error', 'Failed to delete event.', array('status' => 500));
+    }
+
+    return rest_ensure_response([
+        'success' => true,
+        'message' => 'Event deleted successfully',
     ]);
 }

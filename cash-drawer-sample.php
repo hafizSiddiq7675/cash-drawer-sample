@@ -66,6 +66,7 @@ function cash_drawer_pos_page() {
                             <th>ID</th>
                             <th>Event Type</th>
                             <th>Created At</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -77,6 +78,7 @@ function cash_drawer_pos_page() {
                                     <td><?php echo esc_html(date('Y-m-d H:i:s', strtotime($event->created_at))); ?></td>
                                     <td>
                                         <button class="btn btn-warning edit-drawer-btn" data-id="<?php echo esc_attr($event->id); ?>">Edit</button>
+                                        <button class="btn btn-danger delete-drawer-btn m-1" data-id="<?php echo esc_attr($event->id); ?>">Delete</button>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -235,6 +237,27 @@ function cash_drawer_pos_page() {
                     console.log(err);
                 }
             });
+        });
+
+
+        // Delete Event
+        $(document).on('click', '.delete-drawer-btn', function () {
+            const id = $(this).data('id');
+            const url = `${CASH_DRAWER_API_BASE}event/${id}`;
+
+            if (confirm('Are you sure you want to delete this event?')) {
+                $.ajax({
+                    url: url,
+                    method: 'DELETE',
+                    success: function () {
+                        alert('Event deleted successfully!');
+                        location.reload(); // or remove the row dynamically
+                    },
+                    error: function () {
+                        alert('Failed to delete event.');
+                    }
+                });
+            }
         });
 
 
