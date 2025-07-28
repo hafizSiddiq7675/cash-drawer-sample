@@ -4,19 +4,15 @@
 
 ### 1. Set Environment Variables
 
-### 1. Copy `.env` File
-
-
 Copy the example environment file to `.env`:
 
 ```bash
 cp example.env .env
 ```
 
-and update `CYPRESS_BASE_URL` with you domain like `your-domain/cash-drawer-sample` :
-
+and update `CYPRESS_BASE_URL` with you domain like `<your-domain>` e.g : `http://localhost/cash-drawer-sample`
 ```bash
-CYPRESS_BASE_URL=http://localhost:8080/cash-drawer-sample
+CYPRESS_BASE_URL=http://localhost/cash-drawer-sample
 ```
 
 
