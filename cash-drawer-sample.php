@@ -154,7 +154,7 @@ function cash_drawer_pos_page() {
             const tender = $('#tender-type').val();
 
             $.ajax({
-                url: '/wordpress/wp-json/cash-drawer/v1/event',
+                url: `${CASH_DRAWER_API_BASE}event`,
                 method: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify({ event_type: tender }),
