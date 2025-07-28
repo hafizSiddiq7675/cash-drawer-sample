@@ -60,7 +60,6 @@ function cash_drawer_register_routes() {
 }
 
 function cash_drawer_log_event($request) {
-
     global $wpdb;
     $table = $wpdb->prefix . 'cash_drawer_events';
     $event_type = sanitize_text_field($request->get_param('event_type'));
@@ -70,9 +69,12 @@ function cash_drawer_log_event($request) {
         'created_at' => current_time('mysql')
     ]);
 
+    $event_id = $wpdb->insert_id;
+
     return rest_ensure_response([
         'success' => true,
         'message' => 'Event logged',
+        'id' => (int) $event_id
     ]);
 }
 
@@ -90,7 +92,7 @@ function cash_drawer_get_event($request) {
     }
 
     return rest_ensure_response([
-        'id'         => $event->id,
+        'id'         => (int) $event->id,
         'event_type' => $event->event_type,
         'created_at' => $event->created_at
     ]);

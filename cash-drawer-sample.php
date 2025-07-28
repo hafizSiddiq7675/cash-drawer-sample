@@ -163,7 +163,7 @@ function cash_drawer_pos_page() {
                     isDrawerModalOpen = false;
 
                     alert("Sale finished and drawer open logged.");
-                    location.reload(); // Reload to show the new record
+                    // location.reload(); // Reload to show the new record
                 },
                 error: function () {
                     alert('Failed to log event.');
