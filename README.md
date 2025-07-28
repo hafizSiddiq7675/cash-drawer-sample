@@ -4,10 +4,19 @@
 
 ### 1. Set Environment Variables
 
-Before running Cypress tests, make sure to define the required environment variable:
+### 1. Copy `.env` File
+
+
+Copy the example environment file to `.env`:
 
 ```bash
-CYPRESS_BASE_URL=http://localhost/cash-drawer-sample
+cp example.env .env
+```
+
+and update `CYPRESS_BASE_URL` with you domain like `http://localhost:8080` :
+
+```bash
+CYPRESS_BASE_URL=http://localhost:8080
 ```
 
 
