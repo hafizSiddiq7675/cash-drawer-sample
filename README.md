@@ -13,10 +13,10 @@ Copy the example environment file to `.env`:
 cp example.env .env
 ```
 
-and update `CYPRESS_BASE_URL` with you domain like `http://localhost:8080` :
+and update `CYPRESS_BASE_URL` with you domain like `your-domain/cash-drawer-sample` :
 
 ```bash
-CYPRESS_BASE_URL=http://localhost:8080
+CYPRESS_BASE_URL=http://localhost:8080/cash-drawer-sample
 ```
 
 
